@@ -10,10 +10,12 @@ import { PatientView } from './components/PatientView';
 import { HospitalDashboard } from './components/HospitalDashboard';
 import { LandingPage } from './components/LandingPage';
 import { EmergencyContactsModal } from './components/EmergencyContactsModal';
+import { NearbyHospitalsMap } from './components/NearbyHospitalsMap';
 
 const AppContent: React.FC = () => {
   const { view, setView, setStep } = useTriage();
   const [showContactsModal, setShowContactsModal] = useState(false);
+  const [showHospitalsMap, setShowHospitalsMap] = useState(false);
 
   const handleStartChatFromLanding = () => {
     setView('patient');
@@ -28,7 +30,10 @@ const AppContent: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-100/60 text-slate-900 flex flex-col font-sans selection:bg-teal-100 selection:text-teal-900">
       {/* Universal Top Navigation */}
-      <TopNav onOpenContacts={() => setShowContactsModal(true)} />
+      <TopNav
+        onOpenContacts={() => setShowContactsModal(true)}
+        onOpenMap={() => setShowHospitalsMap(true)}
+      />
 
       {/* Main Content Area */}
       <main className="flex-1 w-full pb-12">
@@ -57,6 +62,12 @@ const AppContent: React.FC = () => {
       <EmergencyContactsModal
         isOpen={showContactsModal}
         onClose={() => setShowContactsModal(false)}
+      />
+
+      {/* Emergency Nearby Hospitals Map Modal */}
+      <NearbyHospitalsMap
+        isOpen={showHospitalsMap}
+        onClose={() => setShowHospitalsMap(false)}
       />
     </div>
   );

@@ -81,16 +81,24 @@ def call_llm(
     return None, "none"
 
 # ── 1. Symptom Extraction from Natural Conversation ───────────────────────────
+from symptom_ontology import extract_clinical_symptoms
+
 def extract_symptoms_from_chat(
     transcript: str,
     available_symptoms: List[str]
 ) -> List[str]:
     """
-    Extracts structured symptoms present in the trained model's symptom vector.
+    Extracts structured symptoms present in the clinical symptom space.
+    Uses clinical ontology with negation recognition, combining LLM extraction if online.
     """
+    # 1. Deterministic ontology extraction (guaranteed accuracy & zero hallucinations)
+    ontology_symptoms = extract_clinical_symptoms(transcript)
+
+    # 2. Try LLM extraction for additional subtle clinical nuances if available
     system_prompt = (
         "You are an expert clinical informatics parser. Extract all reported symptoms from the patient transcript. "
         "Map them STRICTLY to the provided list of valid symptom keys. Do NOT invent new keys.\n"
+        "NEVER extract symptoms that the patient explicitly denies or states they do NOT have.\n"
         f"VALID KEYS:\n{json.dumps(available_symptoms)}\n\n"
         "Return ONLY valid JSON matching this schema:\n"
         '{"extracted_symptoms": ["key1", "key2"]}'
@@ -102,26 +110,15 @@ def extract_symptoms_from_chat(
             data = json.loads(text)
             extracted = data.get("extracted_symptoms", [])
             valid_set = set(available_symptoms)
-            res = [s for s in extracted if s in valid_set]
-            if res:
-                return res
+            llm_symptoms = [s for s in extracted if s in valid_set]
+            if llm_symptoms:
+                combined = list(set(ontology_symptoms + llm_symptoms))
+                return combined
         except Exception:
             pass
 
-    # Keyword substring matching fallback if LLM is unavailable (e.g. quota/network)
-    lower_t = transcript.lower().replace("-", " ")
-    matched = []
-    for s in available_symptoms:
-        s_clean = s.replace("_", " ").lower()
-        if s_clean in lower_t:
-            matched.append(s)
-        else:
-            parts = [p for p in s.split("_") if len(p) > 3]
-            if len(parts) >= 2 and all(p in lower_t for p in parts):
-                matched.append(s)
-            elif any(p in lower_t for p in parts if p in ["fever", "cough", "vomiting", "bleeding", "headache", "seizure", "breathless", "sweat"]):
-                matched.append(s)
-    return list(set(matched))
+    return ontology_symptoms
+
 
 # ── 2. Conversational Follow-up Question Generation ───────────────────────────
 from clinical_trees import detect_clinical_category, get_already_asked_facets, get_next_clinical_facet

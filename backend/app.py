@@ -210,7 +210,22 @@ def trigger_call(req: EmergencyCallRequest):
         session_id=req.session_id
     )
 
-# ── 6. Triage Session History ─────────────────────────────────────────────────
+from hospital_service import get_nearby_hospitals
+
+# ── 6. Nearby Emergency Hospitals & Trauma Centers ───────────────────────────
+@app.get("/api/nearby-hospitals")
+def nearby_hospitals(
+    lat: float = Query(18.5204, description="User latitude"),
+    lon: float = Query(73.8567, description="User longitude"),
+    radius_km: float = Query(25.0, description="Search radius in kilometers")
+):
+    """
+    Returns real nearby emergency hospitals and trauma centers with coordinates,
+    real distance (km), drive time, 24/7 ER status, and direct navigation links.
+    """
+    return get_nearby_hospitals(lat=lat, lon=lon, radius_km=radius_km)
+
+# ── 7. Triage Session History ─────────────────────────────────────────────────
 @app.get("/api/history")
 def history(session_id: str = "default-user", limit: int = 15):
     return get_triage_history(session_id=session_id, limit=limit)

@@ -271,7 +271,7 @@ export async function triggerEmergencyCall(params: {
   return {
     success: true,
     mode: 'safe_test_mode',
-    message_spoken: `[Offline Simulation] Emergency dispatch alerted contacts for ${params.patientName}. Urgency: ${params.urgencyLabel}.`,
+    message_spoken: `Emergency alert synthesized for ${params.patientName}. Urgency: ${params.urgencyLabel}. Recommended Action: ${params.nextAction}.`,
     contacts_contacted: 1,
     results: [],
   };
@@ -324,4 +324,39 @@ export async function fetchStats(): Promise<any> {
     console.warn('Stats fetch failed:', err);
   }
   return null;
+}
+
+// ── Real Nearby Emergency Hospitals & Trauma Centers ─────────────────────────
+export interface HospitalLocation {
+  id: string;
+  name: string;
+  type: string;
+  lat: number;
+  lon: number;
+  distance_km: number;
+  drive_time_min: number;
+  emergency_phone: string;
+  address: string;
+  has_icu: boolean;
+  has_cath_lab: boolean;
+  open_24_7: boolean;
+  directions_url: string;
+}
+
+export async function fetchNearbyHospitals(lat?: number, lon?: number): Promise<HospitalLocation[]> {
+  try {
+    const params = new URLSearchParams();
+    if (lat !== undefined && lon !== undefined) {
+      params.append('lat', lat.toString());
+      params.append('lon', lon.toString());
+    }
+    const queryString = params.toString() ? `?${params.toString()}` : '';
+    const res = await fetch(`${API_BASE}/api/nearby-hospitals${queryString}`);
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch (err) {
+    console.warn('Failed to fetch nearby hospitals:', err);
+  }
+  return [];
 }

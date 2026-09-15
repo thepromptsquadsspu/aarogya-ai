@@ -57,14 +57,14 @@ def dispatch_emergency_calls(
             call_log = log_emergency_call(
                 contact=contact,
                 message=message_text,
-                status="simulated_success",
-                call_sid=f"test-sim-{contact.get('id', 'c')[:6]}",
+                status="test_mode_logged",
+                call_sid=f"test-log-{contact.get('id', 'c')[:6]}",
                 session_id=session_id
             )
             call_logs.append({
                 "contact_name": contact_name,
                 "contact_phone": contact_phone,
-                "status": "simulated_success",
+                "status": "test_mode_logged",
                 "mode": "safe_test_mode",
                 "message": message_text
             })

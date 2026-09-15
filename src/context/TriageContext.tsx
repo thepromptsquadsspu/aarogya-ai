@@ -91,12 +91,9 @@ export const TriageProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const loadQueue = useCallback(async () => {
-    if (USE_MOCK) return;
     try {
       const queue = await fetchHospitalQueue();
-      if (queue.length > 0 || hospitalQueue.length === 0) {
-        setHospitalQueue(queue);
-      }
+      setHospitalQueue(queue);
     } catch (err) {
       console.warn('Queue fetch failed:', err);
     }

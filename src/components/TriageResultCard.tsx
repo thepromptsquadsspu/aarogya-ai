@@ -3,6 +3,7 @@ import { useTriage } from '../context/TriageContext';
 import { ESILevel } from '../types';
 import { triggerEmergencyCall, EmergencyCallResponse } from '../services/api';
 import { EmergencyContactsModal } from './EmergencyContactsModal';
+import { NearbyHospitalsMap } from './NearbyHospitalsMap';
 import {
   PhoneCall,
   Share2,
@@ -20,6 +21,7 @@ import {
   Radio,
   PhoneForwarded,
   UserPlus,
+  MapPin,
 } from 'lucide-react';
 
 export const TriageResultCard: React.FC = () => {
@@ -36,6 +38,7 @@ export const TriageResultCard: React.FC = () => {
   const [callResult, setCallResult] = useState<EmergencyCallResponse | null>(null);
   const [callError, setCallError] = useState<string | null>(null);
   const [showContactsModal, setShowContactsModal] = useState(false);
+  const [showHospitalsMap, setShowHospitalsMap] = useState(false);
 
   if (!triageResult) {
     return null;
@@ -206,14 +209,26 @@ export const TriageResultCard: React.FC = () => {
                 </div>
               </div>
 
-              <a
-                id="btn-call-108-ambulance-large"
-                href="tel:108"
-                className="w-full py-3.5 px-4 bg-rose-600 hover:bg-rose-700 active:scale-[0.99] text-white font-bold text-sm sm:text-base rounded-xl shadow-md flex items-center justify-center gap-2.5 transition-all text-center"
-              >
-                <PhoneCall className="w-5 h-5 animate-pulse" />
-                <span>Call 108 Emergency Ambulance (Toll-Free)</span>
-              </a>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <a
+                  id="btn-call-108-ambulance-large"
+                  href="tel:108"
+                  className="w-full py-3.5 px-4 bg-rose-600 hover:bg-rose-700 active:scale-[0.99] text-white font-bold text-xs sm:text-sm rounded-xl shadow-md flex items-center justify-center gap-2 transition-all text-center"
+                >
+                  <PhoneCall className="w-4 h-4 animate-pulse" />
+                  <span>Call 108 Ambulance</span>
+                </a>
+
+                <button
+                  id="btn-locate-nearby-hospitals"
+                  type="button"
+                  onClick={() => setShowHospitalsMap(true)}
+                  className="w-full py-3.5 px-4 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md border border-rose-500/50 flex items-center justify-center gap-2 transition-all cursor-pointer"
+                >
+                  <MapPin className="w-4 h-4 text-rose-400" />
+                  <span>Locate Nearby Hospitals</span>
+                </button>
+              </div>
             </div>
           )}
 
@@ -510,6 +525,13 @@ export const TriageResultCard: React.FC = () => {
       <EmergencyContactsModal
         isOpen={showContactsModal}
         onClose={() => setShowContactsModal(false)}
+      />
+
+      {/* Real Nearby Emergency Hospitals Map */}
+      <NearbyHospitalsMap
+        isOpen={showHospitalsMap}
+        onClose={() => setShowHospitalsMap(false)}
+        emergencyReason={urgency_label}
       />
     </div>
   );

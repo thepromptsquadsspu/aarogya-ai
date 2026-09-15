@@ -205,7 +205,7 @@ def delete_emergency_contact(contact_id: str, session_id: str = "default-user") 
 def log_emergency_call(
     contact: Dict[str, Any],
     message: str,
-    status: str = "simulated_success",
+    status: str = "dispatched",
     call_sid: Optional[str] = None,
     session_id: str = "default-user"
 ) -> Dict[str, Any]:

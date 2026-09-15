@@ -7,14 +7,16 @@ import {
   UserCheck,
   Home,
   Users,
+  MapPin,
 } from 'lucide-react';
 import { ModelStatusBadge } from './ModelStatusBadge';
 
 interface TopNavProps {
   onOpenContacts?: () => void;
+  onOpenMap?: () => void;
 }
 
-export const TopNav: React.FC<TopNavProps> = ({ onOpenContacts }) => {
+export const TopNav: React.FC<TopNavProps> = ({ onOpenContacts, onOpenMap }) => {
   const { view, setView, hospitalQueue } = useTriage();
 
   const criticalCount = hospitalQueue.filter((p) => p.esiLevel <= 2 && p.status !== 'Discharged').length;
@@ -113,6 +115,17 @@ export const TopNav: React.FC<TopNavProps> = ({ onOpenContacts }) => {
             >
               <Users className="w-3.5 h-3.5 text-slate-600" />
               <span>Contacts</span>
+            </button>
+          )}
+
+          {onOpenMap && (
+            <button
+              onClick={onOpenMap}
+              title="Locate Nearby Emergency Hospitals & Trauma Centers"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-lg shadow-sm border border-slate-700 transition-colors cursor-pointer"
+            >
+              <MapPin className="w-3.5 h-3.5 text-rose-400" />
+              <span className="hidden sm:inline">Nearby Hospitals</span>
             </button>
           )}
 
