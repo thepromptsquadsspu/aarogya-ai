@@ -34,17 +34,30 @@ export const VoiceInput: React.FC<VoiceInputProps> = ({
     }
   };
 
-  // Check browser speech support
-  useEffect(() => {
+  const stopActiveStream = () => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.stream) {
+      mediaRecorderRef.current.stream.getTracks().forEach((track) => track.stop());
+    }
+  };
+
+  // Start browser-native SpeechRecognition
+  const startBrowserListening = () => {
     const SpeechRecognition =
       (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
-      setMode('server'); // Fall back to server Whisper
+      setMode('server');
+      startServerRecording();
       return;
     }
 
     try {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.abort();
+        } catch (_) {}
+      }
+
       const recognition = new SpeechRecognition();
       recognition.continuous = false;
       recognition.interimResults = false;
@@ -56,23 +69,23 @@ export const VoiceInput: React.FC<VoiceInputProps> = ({
       };
 
       recognition.onresult = (event: any) => {
-        const text = event.results[0][0].transcript;
-        if (text) {
-          onTranscript(text);
+        const text = event.results?.[0]?.[0]?.transcript;
+        if (text && text.trim()) {
+          onTranscript(text.trim());
         }
         setIsListening(false);
       };
 
       recognition.onerror = (event: any) => {
-        console.warn('Browser speech recognition error:', event.error);
+        console.warn('SpeechRecognition error:', event.error);
         if (event.error === 'not-allowed') {
-          setErrorMessage('Microphone access denied. Please allow mic permissions.');
+          setErrorMessage('Microphone access denied. Please grant microphone permissions.');
           setIsListening(false);
         } else if (event.error === 'no-speech') {
-          setErrorMessage('No speech detected. Please try speaking again.');
+          setErrorMessage('No speech detected. Please try again.');
           setIsListening(false);
         } else {
-          // Switch to server-side Whisper fallback
+          // Switch to server Whisper fallback
           setMode('server');
           setIsListening(false);
           startServerRecording();
@@ -84,16 +97,13 @@ export const VoiceInput: React.FC<VoiceInputProps> = ({
       };
 
       recognitionRef.current = recognition;
-    } catch (e) {
+      recognition.start();
+    } catch (err) {
+      console.warn('SpeechRecognition start failed, falling back to server:', err);
       setMode('server');
+      startServerRecording();
     }
-
-    return () => {
-      if (recognitionRef.current) {
-        recognitionRef.current.abort();
-      }
-    };
-  }, [language, onTranscript]);
+  };
 
   // Server-side MediaRecorder Fallback (Groq Whisper)
   const startServerRecording = async () => {
@@ -103,7 +113,7 @@ export const VoiceInput: React.FC<VoiceInputProps> = ({
       const mediaRecorder = new MediaRecorder(stream);
 
       mediaRecorder.ondataavailable = (e) => {
-        if (e.data.size > 0) {
+        if (e.data && e.data.size > 0) {
           audioChunksRef.current.push(e.data);
         }
       };
@@ -115,11 +125,15 @@ export const VoiceInput: React.FC<VoiceInputProps> = ({
 
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
         if (audioBlob.size > 0) {
-          const text = await transcribeAudio(audioBlob);
-          if (text) {
-            onTranscript(text);
-          } else {
-            setErrorMessage('Server voice transcription returned no speech.');
+          try {
+            const text = await transcribeAudio(audioBlob);
+            if (text && text.trim()) {
+              onTranscript(text.trim());
+            } else {
+              setErrorMessage('Server voice transcription returned no speech.');
+            }
+          } catch (e: any) {
+            setErrorMessage('Audio transcription failed. Please type your message.');
           }
         }
         setIsTranscribing(false);
@@ -131,33 +145,42 @@ export const VoiceInput: React.FC<VoiceInputProps> = ({
       setErrorMessage(null);
     } catch (err) {
       console.error('MediaRecorder error:', err);
-      setErrorMessage('Microphone permission blocked or unavailable.');
+      setErrorMessage('Microphone permission blocked or device unavailable.');
       setIsListening(false);
     }
   };
+
+  useEffect(() => {
+    return () => {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.abort();
+        } catch (_) {}
+      }
+      stopActiveStream();
+    };
+  }, []);
 
   const toggleListening = () => {
     setErrorMessage(null);
 
     if (isListening) {
-      if (mode === 'browser' && recognitionRef.current) {
-        recognitionRef.current.stop();
-      } else if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
-        mediaRecorderRef.current.stop();
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch (_) {}
+      }
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+        try {
+          mediaRecorderRef.current.stop();
+        } catch (_) {}
       }
       setIsListening(false);
       return;
     }
 
-    if (mode === 'browser' && recognitionRef.current) {
-      try {
-        recognitionRef.current.lang = getLocale(language);
-        recognitionRef.current.start();
-      } catch (err) {
-        // Switch to server Whisper
-        setMode('server');
-        startServerRecording();
-      }
+    if (mode === 'browser') {
+      startBrowserListening();
     } else {
       startServerRecording();
     }

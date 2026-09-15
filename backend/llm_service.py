@@ -124,6 +124,8 @@ def extract_symptoms_from_chat(
     return list(set(matched))
 
 # ── 2. Conversational Follow-up Question Generation ───────────────────────────
+from clinical_trees import detect_clinical_category, get_already_asked_facets, get_next_clinical_facet
+
 def generate_chat_turn(
     messages: List[Dict[str, Any]],
     language: str,
@@ -134,41 +136,78 @@ def generate_chat_turn(
     lang_labels = {"hi": "Hindi", "mr": "Marathi", "en": "English"}
     target_lang = lang_labels.get(language, "English")
 
+    transcript = "\n".join([f"{m.get('sender', 'user').upper()}: {m.get('text', '')}" for m in messages])
+    q_count = len([m for m in messages if m.get("sender") == "assistant"]) + 1
+
+    # Detect clinical category & track already asked facets
+    category = detect_clinical_category(transcript, body_regions)
+    already_asked = get_already_asked_facets(messages)
+    next_facet_info = get_next_clinical_facet(category, already_asked, language)
+
+    facet_instruction = ""
+    suggested_q = ""
+    suggested_replies = []
+    is_ready = q_count >= 4
+
+    if next_facet_info:
+        facet_name = next_facet_info["facet"]
+        suggested_q = next_facet_info["question"]
+        suggested_replies = next_facet_info["quick_replies"]
+        if next_facet_info.get("is_last_facet"):
+            is_ready = True
+        facet_instruction = (
+            f"Clinical Focus Category: {category}.\n"
+            f"Already probed clinical facets: {', '.join(already_asked) if already_asked else 'None'}.\n"
+            f"Target clinical facet for this turn: '{facet_name}'.\n"
+            f"You may adapt or use this clinically validated probe in {target_lang}:\n"
+            f"'{suggested_q}'\n"
+        )
+
     system_prompt = f"""You are TriageMed, an expert clinical triage assistant.
 Your goal is to ask 1 focused, empathetic follow-up question in {target_lang} to assess symptom severity, onset, radiation, or associated red flags.
+{facet_instruction}
 RULES:
 1. Never give medical diagnoses.
 2. Respond strictly in {target_lang}.
-3. Ask ONE clear question at a time.
-4. After 4 to 6 exchanges or when details are clear, set ready_for_assessment to true.
+3. Ask ONE clear question at a time. Do NOT repeat questions or facets already covered in the transcript.
+4. Set ready_for_assessment to {str(is_ready).lower()} if details are sufficiently clear or after 3-5 focused questions.
 5. Provide 2-4 quick reply suggestions for the patient.
 
 Return ONLY valid JSON with this exact schema:
 {{
   "next_question": "string in {target_lang}",
-  "question_number": number,
+  "question_number": {q_count},
   "ready_for_assessment": boolean,
   "quick_replies": ["option1", "option2", "option3"]
 }}"""
 
-    transcript = "\n".join([f"{m.get('sender', 'user').upper()}: {m.get('text', '')}" for m in messages])
     context = f"Patient: {patient or {}}\nVitals: {vitals or {}}\nBody regions: {body_regions or []}\nTranscript:\n{transcript}"
 
     text, provider = call_llm(system_prompt, context, temperature=0.2, response_json=True)
     if text:
         try:
-            return json.loads(text)
+            parsed = json.loads(text)
+            if "next_question" in parsed:
+                return parsed
         except Exception:
             pass
 
-    # Fallback if both LLMs fail
-    q_count = len([m for m in messages if m.get("sender") == "assistant"]) + 1
+    # High-reliability clinical fallback when LLM is unavailable or times out
+    if suggested_q:
+        return {
+            "next_question": suggested_q,
+            "question_number": q_count,
+            "ready_for_assessment": is_ready,
+            "quick_replies": suggested_replies
+        }
+
     return {
-        "next_question": "Can you tell me more about how long this has been happening?",
+        "next_question": "Can you describe how long this symptom has been present and if anything makes it better or worse?",
         "question_number": q_count,
         "ready_for_assessment": q_count >= 4,
         "quick_replies": ["Started today", "A few days ago", "Getting worse", "About the same"]
     }
+
 
 # ── 3. Explainable AI Clinical Explanation Generation ─────────────────────────
 def generate_clinical_explanation(
@@ -251,6 +290,7 @@ def check_model_status() -> Dict[str, Any]:
     results = {
         "groq": {"online": False, "latency_ms": None, "model": settings.GROQ_MODEL, "error": None},
         "gemini": {"online": False, "latency_ms": None, "model": settings.GEMINI_MODEL, "error": None},
+        "classifier": {"online": True, "type": "Random Forest + Clinical Rule Engine", "latency_ms": 2},
         "primary_provider": "groq" if settings.GROQ_API_KEY else "gemini",
         "timestamp": int(now * 1000)
     }

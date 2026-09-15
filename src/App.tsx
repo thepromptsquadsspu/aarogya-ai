@@ -54,9 +54,10 @@ const AppContent: React.FC = () => {
       </main>
 
       {/* Emergency Contacts Modal */}
-      {showContactsModal && (
-        <EmergencyContactsModal onClose={() => setShowContactsModal(false)} />
-      )}
+      <EmergencyContactsModal
+        isOpen={showContactsModal}
+        onClose={() => setShowContactsModal(false)}
+      />
     </div>
   );
 };

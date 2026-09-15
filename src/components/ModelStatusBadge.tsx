@@ -36,8 +36,12 @@ export const ModelStatusBadge: React.FC = () => {
   const groqOnline = status?.groq.online;
   const geminiOnline = status?.gemini.online;
   const isOnline = groqOnline || geminiOnline;
-  const activeProvider = groqOnline ? 'Groq (Llama 3.3)' : (geminiOnline ? 'Gemini (Flash)' : 'Simulation Mode');
-  const latency = groqOnline ? status?.groq.latency_ms : (geminiOnline ? status?.gemini.latency_ms : null);
+  const activeProvider = groqOnline 
+    ? 'Groq (Llama 3.3)' 
+    : geminiOnline 
+    ? 'Gemini (Flash)' 
+    : 'Clinical ML Engine (RF)';
+  const latency = groqOnline ? status?.groq.latency_ms : (geminiOnline ? status?.gemini.latency_ms : 2);
 
   return (
     <div

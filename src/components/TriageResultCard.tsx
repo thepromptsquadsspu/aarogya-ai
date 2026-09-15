@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useTriage } from '../context/TriageContext';
 import { ESILevel } from '../types';
 import { triggerEmergencyCall, EmergencyCallResponse } from '../services/api';
+import { EmergencyContactsModal } from './EmergencyContactsModal';
 import {
   PhoneCall,
   Share2,
@@ -9,6 +10,7 @@ import {
   ShieldAlert,
   CheckCircle2,
   AlertCircle,
+  AlertTriangle,
   RotateCcw,
   Sparkles,
   HeartHandshake,
@@ -17,6 +19,7 @@ import {
   BarChart2,
   Radio,
   PhoneForwarded,
+  UserPlus,
 } from 'lucide-react';
 
 export const TriageResultCard: React.FC = () => {
@@ -32,6 +35,7 @@ export const TriageResultCard: React.FC = () => {
   const [isCalling, setIsCalling] = useState(false);
   const [callResult, setCallResult] = useState<EmergencyCallResponse | null>(null);
   const [callError, setCallError] = useState<string | null>(null);
+  const [showContactsModal, setShowContactsModal] = useState(false);
 
   if (!triageResult) {
     return null;
@@ -46,6 +50,7 @@ export const TriageResultCard: React.FC = () => {
     home_care_tips,
     confidence,
     forcedByRedFlag,
+    is_uncertain,
     probabilities,
   } = triageResult;
 
@@ -212,6 +217,19 @@ export const TriageResultCard: React.FC = () => {
             </div>
           )}
 
+          {/* CLINICAL UNCERTAINTY BANNER (< 0.35 confidence floor) */}
+          {(is_uncertain || confidence === 'low') && (
+            <div className="p-3.5 bg-amber-50 border-2 border-amber-300 rounded-xl space-y-1.5 animate-fadeIn">
+              <div className="flex items-center gap-2 text-amber-900 font-bold text-xs uppercase tracking-wider">
+                <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                <span>Diagnostic Uncertainty Notice (Confidence Floor Flag)</span>
+              </div>
+              <p className="text-xs text-amber-800 leading-relaxed">
+                Reported symptoms do not strongly match a single definitive pathology (top condition probability below the 35% clinical threshold). Direct physical examination and laboratory workup by a healthcare professional are strongly recommended.
+              </p>
+            </div>
+          )}
+
           {/* AUTOMATED EMERGENCY AUTO-CALL (TWILIO) */}
           <div className="p-4 bg-amber-50/90 border border-amber-300 rounded-xl space-y-3">
             <div className="flex items-center justify-between">
@@ -250,6 +268,33 @@ export const TriageResultCard: React.FC = () => {
                   </>
                 )}
               </button>
+            ) : callResult.success === false ? (
+              <div className="p-3.5 bg-amber-100/80 rounded-xl border border-amber-300 space-y-2 text-xs text-amber-950">
+                <div className="flex items-center gap-2 font-bold text-amber-900">
+                  <AlertCircle className="w-4 h-4 text-amber-700 shrink-0" />
+                  <span>{callResult.error || 'No emergency contacts configured.'}</span>
+                </div>
+                <p className="text-[11px] text-amber-800">
+                  Please add at least one caregiver contact so automated emergency voice alerts can reach them.
+                </p>
+                <div className="flex items-center gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => setShowContactsModal(true)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-700 hover:bg-amber-800 text-white font-bold rounded-lg text-xs transition-colors cursor-pointer"
+                  >
+                    <UserPlus className="w-3.5 h-3.5" />
+                    <span>Configure Contacts Now</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCallResult(null)}
+                    className="px-2.5 py-1.5 text-amber-800 hover:text-amber-950 text-xs font-semibold underline cursor-pointer"
+                  >
+                    Retry
+                  </button>
+                </div>
+              </div>
             ) : (
               <div className="p-3 bg-white rounded-xl border border-amber-300 space-y-2 text-xs">
                 <div className="flex items-center justify-between text-emerald-700 font-bold">
@@ -460,6 +505,12 @@ export const TriageResultCard: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* Emergency Contacts Modal Triggered from Result Card */}
+      <EmergencyContactsModal
+        isOpen={showContactsModal}
+        onClose={() => setShowContactsModal(false)}
+      />
     </div>
   );
 };

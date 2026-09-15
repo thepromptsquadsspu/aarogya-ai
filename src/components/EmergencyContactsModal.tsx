@@ -70,6 +70,24 @@ export const EmergencyContactsModal: React.FC<EmergencyContactsModalProps> = ({ 
     }
   };
 
+  const hasContactPicker = typeof navigator !== 'undefined' && 'contacts' in navigator && 'ContactsManager' in window;
+
+  const handlePickDeviceContact = async () => {
+    setError(null);
+    try {
+      const selected = await (navigator as any).contacts.select(['name', 'tel'], { multiple: false });
+      if (selected && selected.length > 0) {
+        const c = selected[0];
+        const pickedName = (c.name && c.name[0]) || '';
+        const pickedTel = (c.tel && c.tel[0]) || '';
+        if (pickedName) setName(pickedName);
+        if (pickedTel) setPhone(pickedTel);
+      }
+    } catch (err: any) {
+      console.info('Contact picker cancelled or unsupported:', err);
+    }
+  };
+
   const handleDelete = async (id: string) => {
     try {
       await deleteEmergencyContact(id);
@@ -157,10 +175,21 @@ export const EmergencyContactsModal: React.FC<EmergencyContactsModalProps> = ({ 
           {/* Add Form */}
           {contacts.length < 2 && (
             <form onSubmit={handleAddContact} className="p-3.5 bg-slate-50/80 rounded-xl border border-slate-200 space-y-3">
-              <h4 className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                <UserPlus className="w-3.5 h-3.5 text-teal-700" />
-                <span>Add Emergency Contact</span>
-              </h4>
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                  <UserPlus className="w-3.5 h-3.5 text-teal-700" />
+                  <span>Add Emergency Contact</span>
+                </h4>
+                {hasContactPicker && (
+                  <button
+                    type="button"
+                    onClick={handlePickDeviceContact}
+                    className="text-[11px] font-semibold text-teal-700 hover:text-teal-900 bg-teal-50 hover:bg-teal-100 border border-teal-200 px-2 py-0.5 rounded-lg transition-colors cursor-pointer"
+                  >
+                    Import Device Contact
+                  </button>
+                )}
+              </div>
 
               <div>
                 <label className="block text-[11px] font-semibold text-slate-600 mb-1">Full Name</label>

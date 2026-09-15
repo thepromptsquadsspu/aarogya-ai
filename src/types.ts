@@ -60,6 +60,7 @@ export interface TriageResult {
   confidence: 'low' | 'medium' | 'high';
   evaluated_at?: number;
   forcedByRedFlag?: boolean;
+  is_uncertain?: boolean;
   probabilities?: ProbabilityItem[];
   extracted_symptoms?: string[];
   summary?: string;
