@@ -9,6 +9,7 @@ import {
   PatientStatus,
   TriageResult,
   Vitals,
+  AppView,
 } from '../types';
 import {
   getInitialHospitalPatients,
@@ -33,8 +34,8 @@ interface CurrentIntakeState {
 }
 
 interface TriageContextType {
-  view: 'patient' | 'hospital';
-  setView: (v: 'patient' | 'hospital') => void;
+  view: AppView;
+  setView: (v: AppView) => void;
   hospitalQueue: HospitalPatient[];
   updatePatientStatus: (patientId: string, status: PatientStatus) => void;
   sendCurrentPatientToHospital: () => HospitalPatient;
@@ -80,7 +81,7 @@ const defaultGuided: GuidedAnswers = {
 const TriageContext = createContext<TriageContextType | undefined>(undefined);
 
 export const TriageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [view, setView] = useState<'patient' | 'hospital'>('patient');
+  const [view, setView] = useState<AppView>('landing');
   const [hospitalQueue, setHospitalQueue] = useState<HospitalPatient[]>(() =>
     USE_MOCK ? getInitialHospitalPatients() : []
   );

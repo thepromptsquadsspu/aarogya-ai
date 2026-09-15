@@ -1,0 +1,366 @@
+{
+  "conditions": [
+    {
+      "name": "Acute Coronary Syndrome / Myocardial Infarction",
+      "base_esi": 1,
+      "urgency": "Resuscitation (Immediate)"
+    },
+    {
+      "name": "Acute Ischemic Stroke / TIA",
+      "base_esi": 1,
+      "urgency": "Resuscitation (Immediate)"
+    },
+    {
+      "name": "Pulmonary Embolism",
+      "base_esi": 1,
+      "urgency": "Resuscitation (Immediate)"
+    },
+    {
+      "name": "Anaphylactic Shock",
+      "base_esi": 1,
+      "urgency": "Resuscitation (Immediate)"
+    },
+    {
+      "name": "Severe Sepsis / Septic Shock",
+      "base_esi": 1,
+      "urgency": "Resuscitation (Immediate)"
+    },
+    {
+      "name": "Tension Pneumothorax",
+      "base_esi": 1,
+      "urgency": "Resuscitation (Immediate)"
+    },
+    {
+      "name": "Active Status Epilepticus / Uncontrolled Seizure",
+      "base_esi": 1,
+      "urgency": "Resuscitation (Immediate)"
+    },
+    {
+      "name": "Severe Uncontrolled Hemorrhage",
+      "base_esi": 1,
+      "urgency": "Resuscitation (Immediate)"
+    },
+    {
+      "name": "Unstable Angina Pectoris",
+      "base_esi": 2,
+      "urgency": "Emergent (High Risk)"
+    },
+    {
+      "name": "Severe Asthma Exacerbation",
+      "base_esi": 2,
+      "urgency": "Emergent (High Risk)"
+    },
+    {
+      "name": "Acute COPD Exacerbation",
+      "base_esi": 2,
+      "urgency": "Emergent (High Risk)"
+    },
+    {
+      "name": "Diabetic Ketoacidosis (DKA)",
+      "base_esi": 2,
+      "urgency": "Emergent (High Risk)"
+    },
+    {
+      "name": "Severe Symptomatic Hypoglycemia",
+      "base_esi": 2,
+      "urgency": "Emergent (High Risk)"
+    },
+    {
+      "name": "Hypertensive Emergency",
+      "base_esi": 2,
+      "urgency": "Emergent (High Risk)"
+    },
+    {
+      "name": "Acute Bacterial / Viral Meningitis",
+      "base_esi": 2,
+      "urgency": "Emergent (High Risk)"
+    },
+    {
+      "name": "Pediatric Febrile Convulsion (Post-ictal)",
+      "base_esi": 2,
+      "urgency": "Emergent (High Risk)"
+    },
+    {
+      "name": "Severe Heat Stroke with Altered Sensorium",
+      "base_esi": 2,
+      "urgency": "Emergent (High Risk)"
+    },
+    {
+      "name": "Acute Traumatic Concussion with Neurological Deficit",
+      "base_esi": 2,
+      "urgency": "Emergent (High Risk)"
+    },
+    {
+      "name": "Acute Pyelonephritis with Sepsis Risk",
+      "base_esi": 2,
+      "urgency": "Emergent (High Risk)"
+    },
+    {
+      "name": "Acute Appendicitis",
+      "base_esi": 3,
+      "urgency": "Urgent (Within 1 Hour)"
+    },
+    {
+      "name": "Acute Cholecystitis",
+      "base_esi": 3,
+      "urgency": "Urgent (Within 1 Hour)"
+    },
+    {
+      "name": "Acute Pancreatitis",
+      "base_esi": 3,
+      "urgency": "Urgent (Within 1 Hour)"
+    },
+    {
+      "name": "Community-Acquired Pneumonia",
+      "base_esi": 3,
+      "urgency": "Urgent (Within 1 Hour)"
+    },
+    {
+      "name": "Nephrolithiasis (Kidney Stone)",
+      "base_esi": 3,
+      "urgency": "Urgent (Within 1 Hour)"
+    },
+    {
+      "name": "Dengue Fever with Warning Signs",
+      "base_esi": 3,
+      "urgency": "Urgent (Within 1 Hour)"
+    },
+    {
+      "name": "Acute Malaria (Plasmodium Falciparum)",
+      "base_esi": 3,
+      "urgency": "Urgent (Within 1 Hour)"
+    },
+    {
+      "name": "Typhoid Fever with Enteric Signs",
+      "base_esi": 3,
+      "urgency": "Urgent (Within 1 Hour)"
+    },
+    {
+      "name": "Acute Viral Hepatitis",
+      "base_esi": 3,
+      "urgency": "Urgent (Within 1 Hour)"
+    },
+    {
+      "name": "Peptic Ulcer Disease with Severe Epigastric Pain",
+      "base_esi": 3,
+      "urgency": "Urgent (Within 1 Hour)"
+    },
+    {
+      "name": "Cellulitis with Rapid Spreading Erythema",
+      "base_esi": 3,
+      "urgency": "Urgent (Within 1 Hour)"
+    },
+    {
+      "name": "Suspected Long Bone Fracture",
+      "base_esi": 3,
+      "urgency": "Urgent (Within 1 Hour)"
+    },
+    {
+      "name": "Acute Dehydration Secondary to Gastroenteritis",
+      "base_esi": 3,
+      "urgency": "Urgent (Within 1 Hour)"
+    },
+    {
+      "name": "Acute Uncomplicated Cystitis (UTI)",
+      "base_esi": 4,
+      "urgency": "Less Urgent (Clinic / OPD)"
+    },
+    {
+      "name": "Acute Ankle Inversion Sprain",
+      "base_esi": 4,
+      "urgency": "Less Urgent (Clinic / OPD)"
+    },
+    {
+      "name": "Acute Lumbar Muscular Strain",
+      "base_esi": 4,
+      "urgency": "Less Urgent (Clinic / OPD)"
+    },
+    {
+      "name": "Cutaneous Abscess Requiring Drainage",
+      "base_esi": 4,
+      "urgency": "Less Urgent (Clinic / OPD)"
+    },
+    {
+      "name": "Acute Bronchitis without Hypoxia",
+      "base_esi": 4,
+      "urgency": "Less Urgent (Clinic / OPD)"
+    },
+    {
+      "name": "Acute Otitis Media",
+      "base_esi": 4,
+      "urgency": "Less Urgent (Clinic / OPD)"
+    },
+    {
+      "name": "Acute Maxillary Rhinosinusitis",
+      "base_esi": 4,
+      "urgency": "Less Urgent (Clinic / OPD)"
+    },
+    {
+      "name": "Streptococcal Pharyngotonsillitis",
+      "base_esi": 4,
+      "urgency": "Less Urgent (Clinic / OPD)"
+    },
+    {
+      "name": "Migraine Headache without Red Flags",
+      "base_esi": 4,
+      "urgency": "Less Urgent (Clinic / OPD)"
+    },
+    {
+      "name": "Seasonal Influenza with Stable Vitals",
+      "base_esi": 4,
+      "urgency": "Less Urgent (Clinic / OPD)"
+    },
+    {
+      "name": "Gastroenteritis (Mild to Moderate)",
+      "base_esi": 4,
+      "urgency": "Less Urgent (Clinic / OPD)"
+    },
+    {
+      "name": "Superficial Cut / Minor Laceration (Hemostasis Achieved)",
+      "base_esi": 5,
+      "urgency": "Non-Urgent (Routine Care)"
+    },
+    {
+      "name": "Tension-Type Headache",
+      "base_esi": 5,
+      "urgency": "Non-Urgent (Routine Care)"
+    },
+    {
+      "name": "Gastroesophageal Reflux (GERD / Mild Acidity)",
+      "base_esi": 5,
+      "urgency": "Non-Urgent (Routine Care)"
+    },
+    {
+      "name": "Allergic Rhinitis / Mild Hay Fever",
+      "base_esi": 5,
+      "urgency": "Non-Urgent (Routine Care)"
+    },
+    {
+      "name": "Minor Skin Abrasion / Bruise",
+      "base_esi": 5,
+      "urgency": "Non-Urgent (Routine Care)"
+    },
+    {
+      "name": "Chronic Mild Anemia Fatigue",
+      "base_esi": 5,
+      "urgency": "Non-Urgent (Routine Care)"
+    }
+  ],
+  "symptoms": [
+    "chest_pain_retrosternal",
+    "chest_pressure_squeezing",
+    "radiating_arm_pain_left",
+    "radiating_jaw_neck_pain",
+    "diaphoresis_cold_sweats",
+    "shortness_of_breath_acute",
+    "dyspnea_on_exertion",
+    "orthopnea",
+    "palpitations",
+    "pleuritic_sharp_chest_pain",
+    "wheezing_expiratory",
+    "stridor_inspiratory",
+    "hemoptysis_coughing_blood",
+    "cough_dry_hacking",
+    "cough_productive_phlegm",
+    "accessory_muscle_breathing",
+    "facial_drooping_unilateral",
+    "arm_weakness_unilateral",
+    "slurred_speech_dysarthria",
+    "aphasia_word_finding",
+    "sudden_loss_of_balance",
+    "unilateral_numbness",
+    "severe_sudden_thunderclap_headache",
+    "throbbing_unilateral_headache",
+    "band_like_headache",
+    "periorbital_stabbing_headache",
+    "photophobia",
+    "phonophobia",
+    "neck_rigidity_stiffness",
+    "loss_of_consciousness_syncope",
+    "pre_syncope_dizziness",
+    "active_tonic_clonic_seizure",
+    "post_ictal_confusion",
+    "involuntary_muscle_twitching",
+    "amnesia_post_injury",
+    "confusion_disorientation",
+    "extreme_lethargy_somnolence",
+    "high_grade_fever_over_102f",
+    "low_grade_fever",
+    "rigors_shivering_chills",
+    "drenching_night_sweats",
+    "profound_asthenia_fatigue",
+    "generalized_myalgia_body_ache",
+    "retro_orbital_eye_pain",
+    "cyclic_fever_paroxysms",
+    "step_ladder_pattern_fever",
+    "petechial_hemorrhagic_rash",
+    "erythematous_maculopapular_rash",
+    "urticaria_hives_wheals",
+    "facial_angioedema_lip_swelling",
+    "generalized_pruritus",
+    "abdominal_pain_rlq_fossa",
+    "abdominal_pain_ruq_subcostal",
+    "abdominal_pain_epigastric",
+    "abdominal_diffuse_cramping",
+    "rebound_tenderness_guarding",
+    "nausea_persistent",
+    "vomiting_intractable",
+    "hematemesis_coffee_ground_vomit",
+    "watery_diarrhea_frequent",
+    "bloody_mucoid_stools",
+    "melena_dark_tarry_stool",
+    "jaundice_scleral_icterus",
+    "dark_tea_colored_urine",
+    "pale_acholic_stools",
+    "dyspepsia_heartburn_regurgitation",
+    "abdominal_distension",
+    "dysuria_burning_micturition",
+    "urinary_frequency_urgency",
+    "gross_hematuria_blood_in_urine",
+    "unilateral_flank_colic_pain",
+    "suprapubic_tenderness",
+    "costovertebral_angle_tenderness",
+    "polyuria_excessive_urination",
+    "polydipsia_excessive_thirst",
+    "kussmaul_rapid_deep_breathing",
+    "fruity_acetone_breath_odor",
+    "tremor_shakiness_adrenergic",
+    "profuse_sweating_hypoglycemia",
+    "hunger_pang_hypoglycemia",
+    "inability_to_bear_weight",
+    "joint_swelling_moderate",
+    "joint_erythema_warmth",
+    "localized_ecchymosis_bruising",
+    "audible_bone_crack_snap",
+    "gross_bony_deformity",
+    "localized_point_tenderness",
+    "muscular_spasm_paraspinal",
+    "straight_leg_raise_positive",
+    "severe_pharyngeal_erythema",
+    "tonsillar_exudate_white_patches",
+    "tender_anterior_cervical_adenopathy",
+    "severe_otalgia_ear_pain",
+    "tympanic_membrane_erythema",
+    "purulent_rhinorrhea",
+    "maxillary_facial_fullness",
+    "loss_of_taste_smell",
+    "superficial_clean_cut_hemostatic",
+    "wound_bleeding_controlled",
+    "wound_arterial_spurting_bleed",
+    "expanding_cellulitic_erythema",
+    "fluctuant_tender_abscess",
+    "local_warmth_induration",
+    "purulent_wound_discharge",
+    "superficial_epidermal_abrasion",
+    "core_hyperthermia_hot_dry_skin",
+    "profuse_cramping_heat_exhaustion",
+    "critical_hypotension_sbp_under_90",
+    "critical_tachycardia_hr_over_130",
+    "critical_hypoxemia_spo2_under_90",
+    "severe_tachypnea_rr_over_30",
+    "pallor_conjunctival_anemia",
+    "capillary_refill_over_3_seconds"
+  ],
+  "total_conditions": 49,
+  "total_symptoms": 113
+}

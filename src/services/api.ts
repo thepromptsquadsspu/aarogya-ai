@@ -12,9 +12,11 @@ import {
 } from '../types';
 
 // REQUIRED: Controlled via VITE_USE_MOCK env var (true = old mock, false = real backend)
-export const USE_MOCK = (import.meta as any).env?.VITE_USE_MOCK !== 'false';
+export const USE_MOCK = (import.meta as any).env?.VITE_USE_MOCK === 'true';
 
-const API_BASE = ''; // Vite proxy handles /api -> localhost:3001
+export * from './triageApi';
+
+const API_BASE = ''; // Vite proxy handles /api -> backend
 
 /**
  * Deterministic Red-Flag Detection Engine.

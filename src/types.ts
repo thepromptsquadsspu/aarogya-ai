@@ -36,6 +36,20 @@ export interface ChatMessage {
   quickReplies?: string[];
 }
 
+export interface ProbabilityItem {
+  condition: string;
+  probability: number;
+  esi_level: ESILevel;
+}
+
+export interface EmergencyContact {
+  id?: string;
+  name: string;
+  phone: string;
+  relationship?: string;
+  is_primary?: boolean;
+}
+
 export interface TriageResult {
   esi_level: ESILevel;
   urgency_label: string;
@@ -46,7 +60,12 @@ export interface TriageResult {
   confidence: 'low' | 'medium' | 'high';
   evaluated_at?: number;
   forcedByRedFlag?: boolean;
+  probabilities?: ProbabilityItem[];
+  extracted_symptoms?: string[];
+  summary?: string;
 }
+
+export type AppView = 'landing' | 'patient' | 'hospital';
 
 export type PatientStatus = 'Waiting' | 'In Treatment' | 'Discharged';
 

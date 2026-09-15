@@ -39,7 +39,7 @@ export const ChatIntake: React.FC = () => {
     if (chatMessages.length === 0) {
       const welcomeMessages: Record<string, { text: string; replies: string[] }> = {
         en: {
-          text: `Namaste ${profile.name || ''}. I am Aarogya AI, your emergency triage assistant. Please describe the primary symptoms or discomfort you are experiencing right now.`,
+          text: `Namaste ${profile.name || ''}. I am TriageMed, your clinical emergency triage advisor. Please describe the primary symptoms or discomfort you are experiencing right now.`,
           replies: [
             'Severe chest pain with sweating',
             'High fever with chills for 2 days',
@@ -48,7 +48,7 @@ export const ChatIntake: React.FC = () => {
           ],
         },
         hi: {
-          text: `नमस्ते ${profile.name || ''} जी। मैं आरोग्य एआई (Aarogya AI) हूँ। कृपया बताएं कि आपको इस समय क्या तकलीफ या लक्षण महसूस हो रहे हैं?`,
+          text: `नमस्ते ${profile.name || ''} जी। मैं ट्रायजमेड (TriageMed) हूँ। कृपया बताएं कि आपको इस समय क्या तकलीफ या लक्षण महसूस हो रहे हैं?`,
           replies: [
             'छाती में तेज दर्द और पसीना आ रहा है',
             '२ दिनों से तेज बुखार और ठंड लग रही है',
@@ -57,7 +57,7 @@ export const ChatIntake: React.FC = () => {
           ],
         },
         mr: {
-          text: `नमस्कार ${profile.name || ''}. मी आरोग्य एआय (Aarogya AI) वैद्यकीय सहाय्यक आहे. आपल्याला सध्या काय त्रास किंवा लक्षणे जाणवत आहेत ते कृपया सांगा.`,
+          text: `नमस्कार ${profile.name || ''}. मी ट्रायजमेड (TriageMed) वैद्यकीय सहाय्यक आहे. आपल्याला सध्या काय त्रास किंवा लक्षणे जाणवत आहेत ते कृपया सांगा.`,
           replies: [
             'छातीत तीव्र वेदना आणि घाम येतोय',
             '२ दिवसांपासून खूप ताप आणि थंडी वाजतेय',
@@ -168,7 +168,7 @@ export const ChatIntake: React.FC = () => {
           <div>
             <div className="flex items-center gap-1.5">
               <span className="text-xs font-bold text-slate-900">
-                Aarogya Symptom Intake
+                TriageMed Intake
               </span>
               <span className="text-[10px] px-1.5 py-0.2 rounded bg-teal-100 text-teal-800 font-bold uppercase">
                 {language}
@@ -256,7 +256,7 @@ export const ChatIntake: React.FC = () => {
               <span className="w-1.5 h-1.5 rounded-full bg-teal-600 animate-bounce"></span>
               <span className="w-1.5 h-1.5 rounded-full bg-teal-600 animate-bounce [animation-delay:0.2s]"></span>
               <span className="w-1.5 h-1.5 rounded-full bg-teal-600 animate-bounce [animation-delay:0.4s]"></span>
-              <span className="text-[11px] text-slate-400 ml-1">Aarogya AI is reasoning...</span>
+              <span className="text-[11px] text-slate-400 ml-1">TriageMed AI is evaluating...</span>
             </div>
           </div>
         )}

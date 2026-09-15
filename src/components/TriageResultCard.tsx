@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTriage } from '../context/TriageContext';
 import { ESILevel } from '../types';
+import { triggerEmergencyCall, EmergencyCallResponse } from '../services/api';
 import {
   PhoneCall,
   Share2,
@@ -13,6 +14,9 @@ import {
   HeartHandshake,
   ArrowRight,
   Clock,
+  BarChart2,
+  Radio,
+  PhoneForwarded,
 } from 'lucide-react';
 
 export const TriageResultCard: React.FC = () => {
@@ -25,6 +29,9 @@ export const TriageResultCard: React.FC = () => {
 
   const { triageResult, hasSentToHospital, hospitalToken, profile } = currentIntake;
   const [copiedToken, setCopiedToken] = useState(false);
+  const [isCalling, setIsCalling] = useState(false);
+  const [callResult, setCallResult] = useState<EmergencyCallResponse | null>(null);
+  const [callError, setCallError] = useState<string | null>(null);
 
   if (!triageResult) {
     return null;
@@ -39,7 +46,26 @@ export const TriageResultCard: React.FC = () => {
     home_care_tips,
     confidence,
     forcedByRedFlag,
+    probabilities,
   } = triageResult;
+
+  const handleTriggerCall = async () => {
+    setIsCalling(true);
+    setCallError(null);
+    try {
+      const res = await triggerEmergencyCall({
+        patientName: profile.name || 'Anonymous Patient',
+        symptoms: red_flags && red_flags.length > 0 ? red_flags : ['Acute triage assessment requested'],
+        urgencyLabel: urgency_label,
+        nextAction: next_action,
+      });
+      setCallResult(res);
+    } catch (err: any) {
+      setCallError(err.message || 'Emergency call alert failed');
+    } finally {
+      setIsCalling(false);
+    }
+  };
 
   // Exact color coding: 1 red, 2 orange, 3 yellow, 4 green, 5 blue
   const levelTheme: Record<
@@ -186,6 +212,81 @@ export const TriageResultCard: React.FC = () => {
             </div>
           )}
 
+          {/* AUTOMATED EMERGENCY AUTO-CALL (TWILIO) */}
+          <div className="p-4 bg-amber-50/90 border border-amber-300 rounded-xl space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Radio className="w-4 h-4 text-amber-600 animate-pulse" />
+                <h4 className="text-xs font-bold text-amber-900 uppercase tracking-wider">
+                  Caregiver Emergency Alert (Twilio Voice)
+                </h4>
+              </div>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-200 text-amber-800 font-bold">
+                Automated Dispatch
+              </span>
+            </div>
+
+            <p className="text-xs text-amber-800 leading-relaxed">
+              Synthesizes this clinical triage summary into clear spoken instructions and places an automated phone alert to designated emergency contacts.
+            </p>
+
+            {!callResult ? (
+              <button
+                id="btn-trigger-emergency-call"
+                type="button"
+                disabled={isCalling}
+                onClick={handleTriggerCall}
+                className="w-full py-2.5 px-4 bg-amber-600 hover:bg-amber-700 disabled:opacity-50 text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
+              >
+                {isCalling ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span>Synthesizing Voice & Placing Emergency Call...</span>
+                  </>
+                ) : (
+                  <>
+                    <PhoneForwarded className="w-4 h-4" />
+                    <span>Trigger Emergency Auto-Call Alert</span>
+                  </>
+                )}
+              </button>
+            ) : (
+              <div className="p-3 bg-white rounded-xl border border-amber-300 space-y-2 text-xs">
+                <div className="flex items-center justify-between text-emerald-700 font-bold">
+                  <span className="flex items-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4" />
+                    {callResult.mode === 'safe_test_mode' ? 'Twilio Voice Synthesized (Safe Test Mode)' : 'Emergency Call Dispatched'}
+                  </span>
+                  <span className="text-[10px] font-mono bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded">
+                    {callResult.contacts_contacted || 1} Contact(s)
+                  </span>
+                </div>
+
+                {callResult.message_spoken && (
+                  <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-200 font-mono text-[11px] text-slate-700 leading-relaxed">
+                    <span className="text-slate-400 font-sans text-[10px] block mb-1 uppercase font-bold">Synthesized Speech Transcript:</span>
+                    "{callResult.message_spoken}"
+                  </div>
+                )}
+
+                {callResult.results && callResult.results.length > 0 && (
+                  <div className="text-[11px] text-slate-600 space-y-1 pt-1 border-t border-slate-100">
+                    {callResult.results.map((r, i) => (
+                      <div key={i} className="flex items-center justify-between">
+                        <span>{r.contact_name} ({r.contact_phone})</span>
+                        <span className="font-semibold text-teal-700 uppercase">{r.status}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {callError && (
+              <p className="text-xs font-semibold text-rose-700">{callError}</p>
+            )}
+          </div>
+
           {/* Action recommendation */}
           <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
             <div className="flex items-center gap-2">
@@ -223,6 +324,41 @@ export const TriageResultCard: React.FC = () => {
                   </li>
                 ))}
               </ul>
+            </div>
+          )}
+
+          {/* Grounded ML Condition Probabilities */}
+          {probabilities && probabilities.length > 0 && (
+            <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2.5">
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                  <BarChart2 className="w-3.5 h-3.5 text-teal-600" />
+                  <span>Grounded ML Condition Probabilities</span>
+                </h4>
+                <span className="text-[10px] bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded font-mono">
+                  45+ Conditions
+                </span>
+              </div>
+
+              <div className="space-y-2">
+                {probabilities.slice(0, 4).map((p, idx) => {
+                  const pct = Math.round(p.probability * 100);
+                  return (
+                    <div key={idx} className="space-y-1">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-semibold text-slate-800">{p.condition}</span>
+                        <span className="font-mono font-bold text-teal-700">{pct}% (ESI {p.esi_level || (p as any).base_esi})</span>
+                      </div>
+                      <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+                        <div
+                          className="bg-teal-600 h-2 rounded-full transition-all duration-500"
+                          style={{ width: `${Math.max(pct, 4)}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
 

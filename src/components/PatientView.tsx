@@ -48,7 +48,7 @@ export const PatientView: React.FC = () => {
   };
 
   return (
-    <div className="max-w-xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4">
+    <div className={`mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 ${step === 'intake' ? 'max-w-6xl' : 'max-w-xl'}`}>
       {/* Step 1: Onboarding Screen */}
       {step === 'onboarding' && (
         <div className="space-y-4 animate-fadeIn">
@@ -99,15 +99,15 @@ export const PatientView: React.FC = () => {
             </div>
           </div>
 
-          {/* DEMO MODE: One-Click Scenario Buttons */}
+          {/* Benchmark Scenarios */}
           <div className="bg-white p-4 rounded-2xl border border-teal-200/80 shadow-xs space-y-2.5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5 text-xs font-bold text-teal-800 uppercase tracking-wide">
                 <Zap className="w-4 h-4 text-amber-500 fill-amber-500" />
-                <span>Live Hackathon Demo Scenarios</span>
+                <span>Clinical Benchmark Scenarios</span>
               </div>
               <span className="text-[10px] bg-teal-50 text-teal-700 px-2 py-0.5 rounded-full border border-teal-200 font-semibold">
-                One-Click Test
+                Instant Verification
               </span>
             </div>
             <p className="text-xs text-slate-500">
@@ -253,11 +253,11 @@ export const PatientView: React.FC = () => {
         </div>
       )}
 
-      {/* Step 2: Intake Screen (Chat + Optional Body Map & Vitals Form) */}
+      {/* Step 2: Intake Screen (Responsive Desktop Split-View + Mobile Stacked) */}
       {step === 'intake' && (
-        <div className="space-y-3 animate-fadeIn">
-          {/* Top summary badge */}
-          <div className="bg-white p-3 rounded-2xl border border-slate-200 flex items-center justify-between shadow-xs">
+        <div className="animate-fadeIn space-y-4">
+          {/* Mobile Top Summary Bar (Hidden on desktop) */}
+          <div className="lg:hidden bg-white p-3 rounded-2xl border border-slate-200 flex items-center justify-between shadow-xs">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-teal-100 text-teal-800 flex items-center justify-center font-bold text-xs">
                 {profile.sex === 'female' ? 'F' : 'M'}
@@ -278,7 +278,6 @@ export const PatientView: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-1.5">
-              {/* Body Map Accordion Toggle */}
               <button
                 type="button"
                 onClick={() => setShowBodyMap((prev) => !prev)}
@@ -293,7 +292,6 @@ export const PatientView: React.FC = () => {
                 {showBodyMap ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
               </button>
 
-              {/* Vitals Form Accordion Toggle */}
               <button
                 type="button"
                 onClick={() => setShowVitalsForm((prev) => !prev)}
@@ -310,32 +308,90 @@ export const PatientView: React.FC = () => {
             </div>
           </div>
 
-          {/* Body Map Dropdown */}
-          {showBodyMap && (
-            <div className="animate-fadeIn">
-              <BodyMap
-                selectedRegions={bodyRegions}
-                onToggleRegion={toggleBodyRegion}
-                language={profile.language}
-              />
-            </div>
-          )}
+          {/* Mobile Accordion Dropdowns */}
+          <div className="lg:hidden space-y-3">
+            {showBodyMap && (
+              <div className="animate-fadeIn">
+                <BodyMap
+                  selectedRegions={bodyRegions}
+                  onToggleRegion={toggleBodyRegion}
+                  language={profile.language}
+                />
+              </div>
+            )}
 
-          {/* Vitals & Guided Form Dropdown */}
-          {showVitalsForm && (
-            <div className="animate-fadeIn">
-              <VitalsForm
-                guided={guided}
-                vitals={vitals}
-                onUpdateGuided={setGuided}
-                onUpdateVitals={setVitals}
-                language={profile.language}
-              />
-            </div>
-          )}
+            {showVitalsForm && (
+              <div className="animate-fadeIn">
+                <VitalsForm
+                  guided={guided}
+                  vitals={vitals}
+                  onUpdateGuided={setGuided}
+                  onUpdateVitals={setVitals}
+                  language={profile.language}
+                />
+              </div>
+            )}
+          </div>
 
-          {/* Main AI Chat Symptom Intake */}
-          <ChatIntake />
+          {/* Layout Grid: Split on Desktop (lg:), Stacked on Mobile */}
+          <div className="lg:grid lg:grid-cols-12 lg:gap-6 items-start">
+            {/* Left: Chat Intake */}
+            <div className="lg:col-span-7">
+              <ChatIntake />
+            </div>
+
+            {/* Right: Desktop Cockpit Panel (Demographics, Body Visualizer, Vitals) */}
+            <div className="hidden lg:flex lg:col-span-5 flex-col gap-4">
+              {/* Patient Overview Card */}
+              <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 mb-2.5">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-teal-100 text-teal-800 flex items-center justify-center font-bold text-xs">
+                      {profile.sex === 'female' ? 'F' : 'M'}
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-900">{profile.name || 'Anonymous Patient'}</h4>
+                      <p className="text-[11px] text-slate-500">{profile.age} years old &bull; {profile.sex}</p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] px-2 py-0.5 bg-teal-50 text-teal-700 font-semibold rounded-full uppercase border border-teal-200">
+                    Language: {profile.language}
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Interactive inputs update the AI assessment context in real time.
+                </p>
+              </div>
+
+              {/* Body Map Visualizer */}
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-3">
+                <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                  <MapPin className="w-3.5 h-3.5 text-teal-600" />
+                  <span>Symptom Location Selector</span>
+                </h4>
+                <BodyMap
+                  selectedRegions={bodyRegions}
+                  onToggleRegion={toggleBodyRegion}
+                  language={profile.language}
+                />
+              </div>
+
+              {/* Vitals Form */}
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-3">
+                <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                  <Activity className="w-3.5 h-3.5 text-teal-600" />
+                  <span>Vitals & Clinical Metrics</span>
+                </h4>
+                <VitalsForm
+                  guided={guided}
+                  vitals={vitals}
+                  onUpdateGuided={setGuided}
+                  onUpdateVitals={setVitals}
+                  language={profile.language}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
@@ -347,7 +403,7 @@ export const PatientView: React.FC = () => {
         <div className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 text-xs font-medium border border-slate-200">
           <ShieldCheck className="w-3.5 h-3.5 text-teal-700 shrink-0" />
           <span>
-            This is a triage aid, not a diagnosis. In an emergency, call{' '}
+            This is a triage advisor, not a definitive diagnosis. In an emergency, dial{' '}
             <a href="tel:108" className="text-rose-600 font-bold underline ml-0.5">
               108
             </a>
@@ -355,7 +411,7 @@ export const PatientView: React.FC = () => {
           </span>
         </div>
         <p className="text-[10px] text-slate-400 mt-1">
-          Aarogya AI • Emergency Severity Index (ESI) 5-Tier Clinical Protocol
+          TriageMed &bull; Emergency Severity Index (ESI) 5-Tier Protocol
         </p>
       </footer>
     </div>

@@ -9,6 +9,13 @@ coverage/
 server/.env*
 !server/.env.example
 server/data/
+backend/data/
+backend/.env*
+!backend/.env.example
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
 *.db
 .antigravity/
 .vscode/
