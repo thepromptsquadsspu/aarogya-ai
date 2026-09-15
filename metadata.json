@@ -1,0 +1,1 @@
+{"name":"Aarogya AI","description":"AI-powered interactive medical triage system for India featuring multilingual symptom intake, deterministic red-flag emergency detection, and real-time hospital queue dashboard.","requestFramePermissions":["microphone"],"majorCapabilities":["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]}
